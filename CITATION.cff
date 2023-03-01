@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+title: check-examples
+message: >-
+  If you use this software, please cite it using the metadata from this file.
+type: software
+authors:
+  - given-names: Roger
+    family-names: Turner
+repository-code: 'https://github.com/rogerturner/check-examples'
+abstract: >-
+  A Chez Scheme library providing `example:` syntax for in-line documentation and simple tests.
+keywords:
+  - Documentation
+  - Unit Tests
+  - Chez Scheme
+license: LGPL-3.0-or-later
