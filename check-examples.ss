@@ -1,12 +1,12 @@
-;; © 2023 Roger Turner <https://github.com/rogerturner/check-examples/issues/new/choose>
-;; SPDX-License-Identifier: LGPL-3.0-or-later  (see Notices below)
+;; SPDX-FileCopyrightText:  © 2023 Roger Turner <r@rogerturner.com>
+;; SPDX-License-Identifier: LGPL-3.0-or-later
+;; see *Notices* below for License and Contact links
 
-#| _minimal_ check-examples library for Chez Scheme. Usage:
-(define (square n) ;; Number -> Number
-  ;; produce n squared
+#| **Lightweight** check-examples library for Chez Scheme. Usage:
+(define (square n)
   (example: (square 5) => 25 )
   (* n n))
-  
+...
 (check-examples)
 |#
 
@@ -14,33 +14,44 @@
 
 (library (check-examples)
 
-(export example: check-examples)
+(export *examples* example: check-examples output-of set-examples)
 
 (import (chezscheme))
 
 (meta define *examples* (list))
 
 (define-syntax example:
-  (lambda (x)
+  (lambda (ex)
     (set! *examples*
       (cons
-        (syntax-case x (=>)
+        (syntax-case ex (=>)
           [(example: e)      #'e ]
-          [(example: e => r) #'(equal? e r) ])
+          [(example: e ... e1 => r)
+            #'(equal? (let () e ... e1) r) ])
         *examples*))
-    #'(define _ #f)))
+    #'(define _)))
 
 (define-syntax check-examples
   (lambda (_)
     (syntax-case _ ()
       [(_) #`(begin
             #,@(map (lambda (ex)
-                  #`(assert #,ex))
-                *examples*) (void)) ])))
+                    #`(assert #,ex))
+                 (reverse *examples*))) ])))
+
+(define-syntax output-of
+  ;; for checking output, eg: (example: (output-of (foo ... (display 22))) => "22" )
+  (syntax-rules ()
+    [(_ e) (with-output-to-string (lambda () e)) ]))
+
+(meta define (set-examples es)
+  ;; (*examples* is mutable at meta level)
+  (set! *examples* es))
 
 )
 
-#| Notices:
+
+#| *Notices*
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as published
@@ -51,6 +62,6 @@
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
   See the GNU Lesser General Public License for more details.
-  
+
   License: <https://spdx.org/licenses/LGPL-3.0-or-later.html>
-  Contact: <https://github.com/rogerturner/check-examples/issues/new/choose>  |#
+  Contact: <https://github.com/rogerturner/Contact/issues/new/choose>  |#
